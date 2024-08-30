@@ -3,8 +3,7 @@ from ImageProcessor import ImageProcessor
 
 def open_image():
     imgObj = ImageProcessor("sample.jpg")
-    imgObj.show()
-    imgObj.save()
+    imgObj.watermark()
 
 
 def main():
