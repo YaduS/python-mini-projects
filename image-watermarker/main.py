@@ -1,11 +1,10 @@
-from PIL import Image
-from PIL import ImageDraw
+from ImageProcessor import ImageProcessor
 
 
 def open_image():
-    with open("sample.jpg", "rb") as fp:
-        im = Image.open(fp)
-        im.show()  # this opens image in default image view desktop app?
+    imgObj = ImageProcessor("sample.jpg")
+    imgObj.show()
+    imgObj.save()
 
 
 def main():
