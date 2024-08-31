@@ -1,13 +1,16 @@
 from ImageProcessor import ImageProcessor
+from UI import UI
 
 
-def open_image():
-    imgObj = ImageProcessor("sample.jpg")
-    imgObj.watermark()
+# def open_image():
+#     imgObj = ImageProcessor("sample.jpg")
+#     imgObj.watermark()
 
 
 def main():
-    open_image()
+    ui = UI()
+
+    # open_image()
 
 
 if __name__ == "__main__":
