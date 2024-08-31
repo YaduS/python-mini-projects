@@ -1,19 +1,28 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
+
+from ImageProcessor import ImageProcessor
 
 
 class UI:
 
     def __init__(self) -> None:
         self.root = Tk()
+
+        # to be used later
+        self.loaded_image = None
+        self.loaded_image_label: Label = None
+        self.watermark_text = None
+        self.mainframe = None
+
         self.config_main_ui()
 
     def config_main_ui(self):
         self.root.title("Image Water marker")
         root = self.root
 
-        root.configure(width=200, height=200)
-        mainframe = ttk.Frame(root, padding="3 3 12 12", width=200, height=200)
+        mainframe = ttk.Frame(root, padding="100 100 120 120")
         mainframe.grid(column=0, row=0)
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
@@ -22,14 +31,18 @@ class UI:
         ttk.Button(mainframe, text="Open Image", command=self.load_image).grid(
             column=1, row=1
         )
-        ttk.Label(mainframe, text="feet").grid(column=1, row=2)
+        self.loaded_image_label = ttk.Label(mainframe, text="Add an image file")
+
+        self.loaded_image_label.grid(column=1, row=2)
+        # hide the label till its ready to be displayed
+        self.loaded_image_label.grid_remove()
 
         watermark_text = StringVar()
         watermark_entry = ttk.Entry(mainframe, width=7, textvariable=watermark_text)
         watermark_entry.grid(column=1, row=3)
 
         ttk.Button(
-            mainframe, text="Open Image", command=self.save_watermark_image
+            mainframe, text="Save Image", command=self.save_watermark_image
         ).grid(column=1, row=4)
 
         for child in mainframe.winfo_children():
@@ -38,18 +51,27 @@ class UI:
         self.watermark_text = watermark_text
         self.mainframe = mainframe
 
-        root.mainloop()
+    def start_ui(self):
+        self.root.mainloop()
 
     def load_image(self):
 
-        # open file selector here
-        pass
+        # Opens the file selector dialog
+        file_path = filedialog.askopenfilename(
+            title="Select a file",
+            filetypes=(
+                ("Image files", "*.jpg *.png *.jpeg"),
+                ("All files", "*.*"),
+            ),
+        )
 
-    def set_watermark_text(self):
-        pass
-
-    def set_watermark_position(self):
-        pass
+        if file_path:
+            print(f"File selected: {file_path}")
+            self.loaded_image_label.configure(text=f"file: {file_path}")
+            self.loaded_image_label.grid()
+            self.loaded_image = ImageProcessor(file_path)
+        else:
+            print("No file selected")
 
     def save_watermark_image(self):
-        pass
+        self.loaded_image.watermark(self.watermark_text.get())

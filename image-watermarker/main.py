@@ -9,8 +9,7 @@ from UI import UI
 
 def main():
     ui = UI()
-
-    # open_image()
+    ui.start_ui()
 
 
 if __name__ == "__main__":
