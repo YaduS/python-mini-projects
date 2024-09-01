@@ -1,11 +1,19 @@
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 
 class ImageProcessor:
 
-    def __init__(self, filename) -> None:
-        self.img = Image.open(filename)
-        print(self.img.size)
+    def __init__(self, full_filepath) -> None:
+
+        filename_with_extension = os.path.basename(full_filepath)
+        name_without_extension = os.path.splitext(filename_with_extension)[0]
+
+        self.filename = name_without_extension
+        self.img = Image.open(full_filepath)
+        self.watermarked_img = None
+
+        print("image dimensions:", self.img.size)
 
     def open_new_image(self, newFilename) -> None:
         self.img = Image.open(newFilename)
@@ -37,8 +45,12 @@ class ImageProcessor:
         d.text((left, top), text, font=fnt, fill=(255, 255, 255, 128))
 
         out = Image.alpha_composite(self.img.convert("RGBA"), txt)
-        out.show()
+        self.watermarked_img = out
+
+    def save_watermarked_img(self):
+        watermarked_image_name = f"{self.filename}-watermarked.jpg"
 
         # "YCbCr" is essentially JPEG?
         # https://pillow.readthedocs.io/en/latest/handbook/concepts.html#modes
-        out.convert(mode="YCbCr").save("sample-watermarked.jpg")
+        self.watermarked_img.convert(mode="YCbCr").save(watermarked_image_name)
+        return watermarked_image_name

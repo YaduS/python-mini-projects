@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk
 
 from ImageProcessor import ImageProcessor
@@ -60,7 +59,6 @@ class UI:
         loaded_image_path_label = ttk.Label(mainframe, text="Add an image file")
         loaded_image_path_label.grid(column=1, row=2, columnspan=2, sticky="ew")
         loaded_image_preview_label = ttk.Label(mainframe)
-        loaded_image_preview_label.configure(width=100)
         loaded_image_preview_label.grid(column=1, row=3, columnspan=2)
         # hide the label till its ready to be displayed
         loaded_image_path_label.grid_remove()
@@ -118,18 +116,34 @@ class UI:
             self.loaded_image_preview_label["image"] = self.tk_converted_image
 
             # display relevant buttons and labels
-            self.loaded_image_path_label.grid()
-            self.loaded_image_preview_label.grid()
-            self.save_button.grid()
-            self.preview_button.grid()
-            self.watermark_label.grid()
-            self.watermark_entry.grid()
+            self.enable_ui_after_load()
         else:
             print("No file selected")
 
     def save_watermark_image(self):
-        self.loaded_image.watermark(self.watermark_text.get())
+        if not self.loaded_image.watermarked_img:
+            return
+        watermarked_img_name = self.loaded_image.save_watermarked_img()
+        messagebox.showinfo(
+            "Saved", f"Watermarked image saved as {watermarked_img_name}"
+        )
+
+    def enable_ui_after_load(self):
+        self.loaded_image_path_label.grid()
+        self.loaded_image_preview_label.grid()
+        self.save_button.grid()
+        self.preview_button.grid()
+        self.watermark_label.grid()
+        self.watermark_entry.grid()
 
     def preview_watermark_img(self):
-        # todo add functionality
-        pass
+        self.loaded_image.watermark(self.watermark_text.get())
+
+        # attribute added to keep this in memory so that image can be displayed
+        self.loaded_image.watermark(self.watermark_text.get())
+        img_copy = self.loaded_image.watermarked_img.copy()
+        img_copy.thumbnail((MAX_WIDTH, MAX_HEIGHT))
+        self.tk_converted_image = ImageTk.PhotoImage(img_copy)
+        self.loaded_image_preview_label["image"] = self.tk_converted_image
+
+        self.enable_ui_after_load()
