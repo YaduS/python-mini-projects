@@ -42,21 +42,25 @@ class UI:
         # typing area
         typed_text = StringVar()
         typing_area = ttk.Entry()
-        typing_area = ttk.Entry(mainframe, width=60, textvariable=typed_text)
+        typing_area = ttk.Entry(mainframe, width=60, textvariable=typed_text, justify='center')
         typing_area.grid(column=0, row=1, pady=10)
         typing_area.bind("<Return>", self.handle_enter_clicked)
+        typing_area.bind("<Key>", self.listen_keystroke)
 
         # assign to globals
         self.mainframe = mainframe
         self.typed_text = typed_text
         self.sample_text = sample_text
+        self.typing_area = typing_area
 
     def launch_ui(self):
         self.load_words()
         self.root.mainloop()
 
-    def listen_keystroke(self):
-        pass
+    def listen_keystroke(self, event):
+        print(f"pressed key: {event.keysym} {event.keysym == "space"}")
+        if event.keysym == "space":
+            self.typed_text.set("")
 
     def handle_enter_clicked(self, event):
         text: str = self.typed_text.get()
@@ -71,6 +75,7 @@ class UI:
                 score += 1
 
         messagebox.showinfo("Score", f"your corrected WPM is {score}")
+        self.typing_area.bind("<Key>", self.listen_keystroke)
 
     def load_words(self):
         with open("./typing-speed-test/common-words.json") as file:
