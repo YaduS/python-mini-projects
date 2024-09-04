@@ -10,7 +10,7 @@ class Block(Turtle):
         self.shape("square")
         self.color(color)
         self.resizemode("user")
-        self.shapesize(stretch_wid=1, stretch_len=5, outline=0)
+        self.shapesize(stretch_wid=1, stretch_len=9.5, outline=2)
 
     def destroy_block(self):
         pass

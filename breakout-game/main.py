@@ -4,7 +4,8 @@ from block import Block
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 NO_OF_ROWS = 3
-NO_OF_BLOCK_PER_ROW = 8
+ROW_COLORS = ["green", "red", "yellow"]
+NO_OF_BLOCK_PER_ROW = 4
 DEFAULT_BLOCK_HEIGHT = 5
 
 # todo: maybe move below line of code inside main function?
@@ -23,12 +24,16 @@ def config_main_screen(screen: _Screen):
 
 
 def create_blocks():
-    # block_width = WINDOW_WIDTH / 3 / 3
-    # block_height = DEFAULT_BLOCK_HEIGHT
-    # block = Block((x_pos, y_pos))
-    block = Block(starting_position=(0, 0), color="green")
-    block = Block((50, 20), "red")
-    block = Block((-50, -20), "yellow")
+    blocks = []
+    for i in range(NO_OF_ROWS):
+        blocks.append([])
+        for j in range(NO_OF_BLOCK_PER_ROW):
+            blocks[i].append(
+                Block(
+                    starting_position=(-305 + (j * 200), -30 + (i * 30)),
+                    color=ROW_COLORS[i],
+                )
+            )
 
 
 def main():
