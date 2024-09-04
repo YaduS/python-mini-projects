@@ -1,5 +1,7 @@
 from turtle import Screen, _Screen
 from block import Block
+from time import sleep
+from ball import Ball
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -36,11 +38,30 @@ def create_blocks():
             )
 
 
+def check_ball_bounce(ball: Ball):
+    padding = 20
+    (x, y) = ball.pos()
+    if x > WINDOW_WIDTH / 2 - padding or x < -WINDOW_WIDTH / 2 + padding:
+        ball.bounce_x()
+    if y > WINDOW_HEIGHT / 2 - padding or y < -WINDOW_HEIGHT / 2 + padding:
+        ball.bounce_y()
+
+
 def main():
     config_main_screen(screen)
     create_blocks()
-    screen.update()
-    screen.mainloop()
+
+    ball = Ball()
+    game_active = True
+    counter = 0
+    while game_active:
+        screen.update()
+
+        ball.move()
+        check_ball_bounce(ball)
+
+        time_delay = 1 / ball.ball_speed
+        sleep(time_delay)
 
 
 if __name__ == "__main__":
