@@ -2,6 +2,8 @@ from turtle import Screen, _Screen
 from block import Block
 from time import sleep
 from ball import Ball
+from turtle import Turtle
+from typing import List
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -16,7 +18,7 @@ class GameManager:
         self.screen = Screen()
         self.config_main_screen()
 
-        self.blocks = []
+        self.blocks: List[List[Turtle]] = []
         self.create_blocks()
 
         self.ball = Ball()
@@ -51,6 +53,27 @@ class GameManager:
         if y > WINDOW_HEIGHT / 2 - padding or y < -WINDOW_HEIGHT / 2 + padding:
             self.ball.bounce_y()
 
+    def check_block_collision(self):
+
+        (x, y) = self.ball.pos()
+        for blocks_row in self.blocks:
+            for ind, block in enumerate(blocks_row):
+                if block == None:
+                    continue
+
+                radial_distance = self.ball.distance(block)
+                _, block_y = block.pos()
+                y_distance = abs(block_y - y)
+                # print(radial_distance, y_distance, block_y, y)
+
+                # Note: Had to do some experimentation to get the constants used below
+                if radial_distance < 110 and y_distance < 25:
+                    self.ball.bounce_y()
+                    block.clear()
+                    block.hideturtle()
+                    blocks_row[ind] = None
+                    break
+
     def start_game_loop(self):
         game_active = True
         while game_active:
@@ -58,6 +81,7 @@ class GameManager:
 
             self.ball.move()
             self.check_ball_bounce()
+            self.check_block_collision()
 
-            time_delay = 1 / self.ball.ball_speed
+            time_delay = 1 / self.ball.ball_speed / 10
             sleep(time_delay)

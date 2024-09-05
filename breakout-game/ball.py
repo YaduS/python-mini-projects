@@ -1,8 +1,7 @@
 from turtle import Turtle
 
-BALL_MOVE_DISTANCE = 10
+BALL_MOVE_DISTANCE = 2
 BALL_SPEED = 10
-
 STARTING_POSITION = (0, -270)
 
 
@@ -10,13 +9,15 @@ class Ball(Turtle):
 
     def __init__(self):
         super().__init__()
+
         self.penup()
         self.setposition(STARTING_POSITION[0], STARTING_POSITION[1])
         self.shape("circle")
         self.color("white")
         self.shapesize(1, 1)
+
         self.x_move = BALL_MOVE_DISTANCE
-        self.y_move = BALL_MOVE_DISTANCE
+        self.y_move = -BALL_MOVE_DISTANCE
         self.ball_speed = BALL_SPEED
 
     def bounce_y(self):
