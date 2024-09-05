@@ -1,9 +1,11 @@
 from turtle import Screen, _Screen
-from block import Block
 from time import sleep
-from ball import Ball
 from turtle import Turtle
 from typing import List
+
+from ball import Ball
+from block import Block
+from paddle import Paddle
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -16,10 +18,15 @@ DEFAULT_BLOCK_HEIGHT = 5
 class GameManager:
     def __init__(self):
         self.screen = Screen()
-        self.config_main_screen()
-
+        self.paddle_bottom = None
+        self.paddle_top = None
         self.blocks: List[List[Turtle]] = []
+
+        self.config_main_screen()
         self.create_blocks()
+
+        self.create_paddles()
+        self.config_listeners()
 
         self.ball = Ball()
 
@@ -30,7 +37,33 @@ class GameManager:
         screen.setup(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
         screen.tracer(0)
 
-        # bind
+    def create_paddles(self):
+        self.paddle_bottom = Paddle(color="aqua")
+        self.paddle_top = Paddle(starting_position=(0, 280), color="orange")
+
+    def config_listeners(self):
+        screen = self.screen
+
+        # keys to move left
+        for key in ["Left", "a", "A"]:
+            screen.onkeypress(
+                fun=lambda: (
+                    self.paddle_bottom.move_left(),
+                    self.paddle_top.move_left(),
+                ),
+                key=key,
+            )
+
+        # keys to move right
+        for key in ["Right", "d", "D"]:
+            screen.onkeypress(
+                fun=lambda: (
+                    self.paddle_bottom.move_right(),
+                    self.paddle_top.move_right(),
+                ),
+                key=key,
+            )
+
         screen.onkeypress(fun=lambda: screen.bye(), key="Escape")
         screen.listen()
 
