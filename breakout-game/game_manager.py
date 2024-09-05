@@ -8,7 +8,7 @@ from block import Block
 from paddle import Paddle
 
 WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+WINDOW_HEIGHT = 800
 NO_OF_ROWS = 3
 ROW_COLORS = ["green", "red", "yellow"]
 NO_OF_BLOCK_PER_ROW = 4
@@ -38,8 +38,8 @@ class GameManager:
         screen.tracer(0)
 
     def create_paddles(self):
-        self.paddle_bottom = Paddle(color="aqua")
-        self.paddle_top = Paddle(starting_position=(0, 280), color="orange")
+        self.paddle_bottom = Paddle(starting_position=(0, -380), color="aqua")
+        self.paddle_top = Paddle(starting_position=(0, 380), color="orange")
 
     def config_listeners(self):
         screen = self.screen

@@ -1,6 +1,6 @@
 from turtle import Turtle
 
-STARTING_POSITION = (0, -280)
+STARTING_POSITION = (0, -380)
 
 WINDOW_MAX_X = 320
 WINDOW_MIN_X = -320
