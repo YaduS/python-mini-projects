@@ -88,15 +88,15 @@ class GameManager:
 
     def check_block_collision(self):
 
-        (x, y) = self.ball.pos()
+        ball_y = self.ball.ycor()
         for blocks_row in self.blocks:
             for ind, block in enumerate(blocks_row):
                 if block == None:
                     continue
 
                 radial_distance = self.ball.distance(block)
-                _, block_y = block.pos()
-                y_distance = abs(block_y - y)
+                block_y = block.ycor()
+                y_distance = abs(block_y - ball_y)
                 # print(radial_distance, y_distance, block_y, y)
 
                 # Note: Had to do some experimentation to get the constants used below
