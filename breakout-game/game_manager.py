@@ -14,9 +14,9 @@ WINDOW_HEIGHT = 800
 MAX_Y = +WINDOW_HEIGHT / 2
 MIN_Y = -WINDOW_HEIGHT / 2
 
-NO_OF_ROWS = 3
+NO_OF_ROWS = 1
 ROW_COLORS = ["green", "red", "yellow"]
-NO_OF_BLOCK_PER_ROW = 4
+NO_OF_BLOCK_PER_ROW = 1
 DEFAULT_BLOCK_HEIGHT = 5
 
 
@@ -125,6 +125,12 @@ class GameManager:
         elif ball_y > MAX_Y - 30 and self.paddle_top.distance(self.ball) < 110:
             self.ball.bounce_y()
 
+    def check_win_condition(self):
+        blocks_left = sum(
+            1 for item in itertools.chain.from_iterable(self.blocks) if item != None
+        )
+        return blocks_left <= 0
+
     def start_game_loop(self):
         game_active = True  # this variable is redundant at this point.
         while game_active:
@@ -137,6 +143,13 @@ class GameManager:
                 break
 
             self.check_block_collision()
+            isWinner = self.check_win_condition()
+            if isWinner:
+                self.screen.update()
+                game_active = True
+                messagebox.showinfo("Game Complete", f"You Won")
+                break
+
             self.check_paddle_hit()
 
             time_delay = 1 / self.ball.ball_speed / 10
