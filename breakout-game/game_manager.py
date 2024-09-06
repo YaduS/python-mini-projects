@@ -120,6 +120,10 @@ class GameManager:
 
     def check_paddle_hit(self):
         ball_y = self.ball.ycor()
+
+        # TODO: add some variance to ball x and y speed each time it collides
+        # with a paddle(maybe based on where paddle was moving towards) so that
+        # the angle of the ball and speed of the ball can vary based on that
         if ball_y < MIN_Y + 40 and self.paddle_bottom.distance(self.ball) < 110:
             self.ball.bounce_y()
         elif ball_y > MAX_Y - 30 and self.paddle_top.distance(self.ball) < 110:
