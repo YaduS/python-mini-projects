@@ -1,7 +1,9 @@
+from tkinter import messagebox
 from turtle import Screen, _Screen
 from time import sleep
 from turtle import Turtle
 from typing import List
+import itertools
 
 from ball import Ball
 from block import Block
@@ -87,7 +89,14 @@ class GameManager:
         if x > WINDOW_WIDTH / 2 - padding or x < -WINDOW_WIDTH / 2 + padding:
             self.ball.bounce_x()
         if y > WINDOW_HEIGHT / 2 - padding or y < -WINDOW_HEIGHT / 2 + padding:
-            self.ball.bounce_y()
+            blocks_left = sum(
+                1 for item in itertools.chain.from_iterable(self.blocks) if item != None
+            )
+            messagebox.showwarning(
+                "Game Over", f"You had {blocks_left} blocks left to clear!"
+            )
+            return True
+        return False
 
     def check_block_collision(self):
         ball_y = self.ball.ycor()
@@ -117,14 +126,17 @@ class GameManager:
             self.ball.bounce_y()
 
     def start_game_loop(self):
-        game_active = True
+        game_active = True  # this variable is redundant at this point.
         while game_active:
             self.screen.update()
 
             self.ball.move()
-            self.check_wall_collision()
-            self.check_block_collision()
+            isCollided = self.check_wall_collision()
+            if isCollided:
+                game_active = False
+                break
 
+            self.check_block_collision()
             self.check_paddle_hit()
 
             time_delay = 1 / self.ball.ball_speed / 10
