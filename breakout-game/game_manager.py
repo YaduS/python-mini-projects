@@ -9,6 +9,9 @@ from paddle import Paddle
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
+MAX_Y = +WINDOW_HEIGHT / 2
+MIN_Y = -WINDOW_HEIGHT / 2
+
 NO_OF_ROWS = 3
 ROW_COLORS = ["green", "red", "yellow"]
 NO_OF_BLOCK_PER_ROW = 4
@@ -39,7 +42,7 @@ class GameManager:
 
     def create_paddles(self):
         self.paddle_bottom = Paddle(starting_position=(0, -380), color="aqua")
-        self.paddle_top = Paddle(starting_position=(0, 380), color="orange")
+        self.paddle_top = Paddle(starting_position=(0, 390), color="orange")
 
     def config_listeners(self):
         screen = self.screen
@@ -78,7 +81,7 @@ class GameManager:
                     )
                 )
 
-    def check_ball_bounce(self):
+    def check_wall_collision(self):
         padding = 20
         (x, y) = self.ball.pos()
         if x > WINDOW_WIDTH / 2 - padding or x < -WINDOW_WIDTH / 2 + padding:
@@ -87,7 +90,6 @@ class GameManager:
             self.ball.bounce_y()
 
     def check_block_collision(self):
-
         ball_y = self.ball.ycor()
         for blocks_row in self.blocks:
             for ind, block in enumerate(blocks_row):
@@ -107,14 +109,23 @@ class GameManager:
                     blocks_row[ind] = None
                     break
 
+    def check_paddle_hit(self):
+        ball_y = self.ball.ycor()
+        if ball_y < MIN_Y + 40 and self.paddle_bottom.distance(self.ball) < 110:
+            self.ball.bounce_y()
+        elif ball_y > MAX_Y - 30 and self.paddle_top.distance(self.ball) < 110:
+            self.ball.bounce_y()
+
     def start_game_loop(self):
         game_active = True
         while game_active:
             self.screen.update()
 
             self.ball.move()
-            self.check_ball_bounce()
+            self.check_wall_collision()
             self.check_block_collision()
+
+            self.check_paddle_hit()
 
             time_delay = 1 / self.ball.ball_speed / 10
             sleep(time_delay)
