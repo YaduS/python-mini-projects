@@ -23,6 +23,10 @@ class UI:
         self.load_image_btn: ttk.Button = None
         self.filename: str = None
         self.color_frame: ttk.Frame = None
+        self.delta_value: StringVar = None
+        self.delta_entry: ttk.Entry = None
+        self.delta_label: ttk.Label = None
+        self.analyze_button: ttk.Button = None
 
         self.config_main_ui()
 
@@ -58,15 +62,35 @@ class UI:
         color_frame = ttk.Frame(root, padding="50 10 50 50")
         color_frame.grid(column=0, row=1)
 
+        # delta label and value
+        delta_label = ttk.Label(mainframe, text="delta")
+        delta_label.grid(column=0, row=3, pady=5)
+        delta_value = StringVar()
+        delta_entry = ttk.Entry(mainframe, textvariable=delta_value)
+        delta_entry.grid(column=0, row=4, pady=5)
+        analyze_button = ttk.Button(
+            mainframe,
+            text="Analyze Image",
+            command=self.analyze_color,
+        )
+        analyze_button.grid(column=0, row=5, pady=5)
+
         # hide image preview and name label(until image is loaded)
         image_preview_label.grid_remove()
         image_name_label.grid_remove()
+        delta_entry.grid_remove()
+        delta_label.grid_remove()
+        analyze_button.grid_remove()
 
         # assign to attributes for later use
         self.image_name_label = image_name_label
         self.image_preview_label = image_preview_label
         self.load_image_btn = load_image_btn
         self.color_frame = color_frame
+        self.delta_entry = delta_entry
+        self.delta_value = delta_value
+        self.delta_label = delta_label
+        self.analyze_button = analyze_button
 
     def start_ui(self):
         self.root.mainloop()
@@ -111,14 +135,24 @@ class UI:
         self.image_preview_label["image"] = self.tk_converted_image
         self.image_name_label.config(text=f"{self.filename}")
 
+        # display hidden components again
         self.image_preview_label.grid()
         self.image_name_label.grid()
+        self.delta_entry.grid()
+        self.delta_label.grid()
+        self.analyze_button.grid()
+
         self.root.after(100, func=self.analyze_color)
 
     def analyze_color(self):
-        self.top_colors = self.color_processor.analyze_image()
+        delta = self.delta_value.get()
+        if not delta:
+            delta = 1
+        else:
+            delta = int(delta)
+        print(f"delta: {delta}")
+        self.top_colors = self.color_processor.analyze_image(delta)
         self.display_colors()
-        # print(f"top_colors: {self.top_colors}")
 
     def display_colors(self):
         for i, color in enumerate(self.top_colors):

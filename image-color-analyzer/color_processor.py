@@ -9,13 +9,17 @@ class ColorProcessor:
 
     def __init__(self):
         self.img: ImageFile = None
+        self.delta = 1
 
     def load_image(self, img: ImageFile):
         self.img = img
 
-    def analyze_image(self):
+    def analyze_image(self, delta: int):
         if self.img == None:
             return None
+
+        self.delta = delta
+        # TODO: implement delta in calculations
 
         img_ndarray = np.array(self.img)
 
