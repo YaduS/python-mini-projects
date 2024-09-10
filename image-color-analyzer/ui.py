@@ -2,6 +2,7 @@ import os
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk, Image
+from color_processor import ColorProcessor
 
 
 IMAGE_MAX_HEIGHT = 400
@@ -14,8 +15,9 @@ class UI:
 
     def __init__(self) -> None:
         self.root = Tk()
+        self.color_processor = ColorProcessor()
 
-        # declare attributes (for autocompletion and type hinting)
+        # declare attributes (for autocompletion and type hinting) to be loaded later
         self.image_name_label: ttk.Label = None
         self.image_preview_label: ttk.Label = None
         self.load_image_btn: ttk.Button = None
@@ -90,12 +92,22 @@ class UI:
             return
 
         self.img = Image.open(file_path)
+
         # attribute added to keep this in memory so that image can be displayed
         img_copy = self.img.copy()
         img_copy.thumbnail((IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT))
+
+        # for large size images, the program freezes here, so using the smaller thumbnail images for analysis
+        self.color_processor.load_image(img_copy)
+
         self.tk_converted_image = ImageTk.PhotoImage(img_copy)
         self.image_preview_label["image"] = self.tk_converted_image
         self.image_name_label.config(text=f"{self.filename}")
 
         self.image_preview_label.grid()
         self.image_name_label.grid()
+        self.root.after(100, func=self.analyze_color)
+
+    def analyze_color(self):
+        top_colors = self.color_processor.analyze_image()
+        print(f"top_colors: {top_colors}")

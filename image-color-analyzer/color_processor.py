@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
 from typing import List
 
@@ -8,11 +8,16 @@ COLOR_DELTA = 24
 class ColorProcessor:
 
     def __init__(self):
-        pass
+        self.img: ImageFile = None
 
-    def main(self):
-        img = Image.open("./image-color-analyzer/color-sample.jpg")
-        img_ndarray = np.array(img)
+    def load_image(self, img: ImageFile):
+        self.img = img
+
+    def analyze_image(self):
+        if self.img == None:
+            return None
+
+        img_ndarray = np.array(self.img)
 
         # expect the array shape to be something like width x height x 3 (three cause one each for R , G and B)
         height, width, _ = img_ndarray.shape
@@ -27,7 +32,6 @@ class ColorProcessor:
 
         hex_colors = [color[0] for color in colors]
         top_colors = self.find_top_colors(hex_colors)
-        print(top_colors)
         return top_colors
 
     def convert_to_hex(self, rgb_list: List[int]):
@@ -57,6 +61,6 @@ class ColorProcessor:
 
 
 # TODO: 1. make GUI so that:
-# a) images can be selected with a file selector
+# a) images can be selected with a file selector ✅
 # b) top 10 colors can be displayed in the UI visually alongside the image preview;
 # c) delta value for color variance can be input through ui and button to rerun calculations based on new delta
