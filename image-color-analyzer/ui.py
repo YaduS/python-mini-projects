@@ -118,6 +118,7 @@ class UI:
 
     def load_image(self):
         file_path = self.select_image()
+        print(file_path)
         # if file unselected, return
         if not file_path:
             return
@@ -151,7 +152,9 @@ class UI:
         else:
             delta = int(delta)
         print(f"delta: {delta}")
-        self.top_colors = self.color_processor.analyze_image(delta)
+        # self.top_colors = self.color_processor.analyze_image(delta)
+        self.top_colors = self.color_processor.analyze_image_clustered(30)
+        print(f"analyze colors: {self.top_colors[:10]}")
         self.display_colors()
 
     def display_colors(self):
