@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk, Image
 from color_processor import ColorProcessor, DEFAULT_COLOR_DELTA
+from threading import Thread
 
 
 IMAGE_MAX_HEIGHT = 400
@@ -72,7 +73,7 @@ class UI:
         analyze_button = ttk.Button(
             mainframe,
             text="Analyze Image",
-            command=self.analyze_color,
+            command=self.analyze_via_thread,
         )
         analyze_button.grid(column=0, row=5, pady=5)
 
@@ -144,9 +145,35 @@ class UI:
         self.delta_label.grid()
         self.analyze_button.grid()
 
-        self.root.after(100, func=self.analyze_color)
+        # self.root.after(100, func=self.analyze_color)
+        self.analyze_via_thread()
 
-    def analyze_color(self):
+    def finish_thread(self):
+        print("thread finished")
+
+    def analyze_via_thread(self):
+
+        def on_thread_complete():
+            self.delta_label.config(text="delta")
+            self.delta_entry.config(state="normal")
+            self.analyze_button.config(state="normal")
+            self.load_image_btn.config(state="normal")
+            print("thread complete")
+
+        # disable ui stuff and show processing
+        self.delta_label.config(text="processing...")
+        self.delta_entry.config(state="disabled")
+        self.analyze_button.config(state="disabled")
+        self.load_image_btn.config(state="disabled")
+        # remove previous color labels
+        for widget in self.color_frame.winfo_children():
+            widget.destroy()
+
+        thread = Thread(target=self.analyze_color, args=(on_thread_complete,))
+        print(f"thread start")
+        thread.start()
+
+    def analyze_color(self, callback):
         delta = self.delta_value.get()
         if not delta:
             delta = DEFAULT_COLOR_DELTA
@@ -156,6 +183,7 @@ class UI:
         self.top_colors = self.color_processor.analyze_image(delta)
         print(f"top 10 colors: {self.top_colors[:10]}")
         self.display_colors()
+        callback()
 
     def display_colors(self):
         for i, color in enumerate(self.top_colors):
