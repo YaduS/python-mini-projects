@@ -2,7 +2,7 @@ import os
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from PIL import ImageTk, Image
-from color_processor import ColorProcessor
+from color_processor import ColorProcessor, DEFAULT_COLOR_DELTA
 
 
 IMAGE_MAX_HEIGHT = 400
@@ -66,6 +66,7 @@ class UI:
         delta_label = ttk.Label(mainframe, text="delta")
         delta_label.grid(column=0, row=3, pady=5)
         delta_value = StringVar()
+        delta_value.set(DEFAULT_COLOR_DELTA)
         delta_entry = ttk.Entry(mainframe, textvariable=delta_value)
         delta_entry.grid(column=0, row=4, pady=5)
         analyze_button = ttk.Button(
@@ -148,13 +149,12 @@ class UI:
     def analyze_color(self):
         delta = self.delta_value.get()
         if not delta:
-            delta = 1
+            delta = DEFAULT_COLOR_DELTA
         else:
             delta = int(delta)
         print(f"delta: {delta}")
-        # self.top_colors = self.color_processor.analyze_image(delta)
-        self.top_colors = self.color_processor.analyze_image_clustered(30)
-        print(f"analyze colors: {self.top_colors[:10]}")
+        self.top_colors = self.color_processor.analyze_image(delta)
+        print(f"top 10 colors: {self.top_colors[:10]}")
         self.display_colors()
 
     def display_colors(self):
