@@ -1,8 +1,9 @@
 from PIL import ImageFile
 import numpy as np
 from scipy.spatial import distance
-
 from typing import List
+from collections import Counter
+from time import time
 
 DEFAULT_COLOR_DELTA = 30
 
@@ -17,6 +18,7 @@ class ColorProcessor:
         self.img = img
 
     def analyze_image(self, delta: int):
+        # print(f"analyze start time: {time()}")
         if self.img == None:
             return None
 
@@ -38,38 +40,59 @@ class ColorProcessor:
 
         hex_colors, rgb_colors = zip(*colors)
         hex_colors, rgb_colors = list(hex_colors), list(rgb_colors)
-        top10_changed = True
 
-        # here its not unique yet..
-        unique_colors = hex_colors
-        while top10_changed:
+        color_counts = Counter(rgb_colors).most_common()
+        rgb_sorted_color, rgb_count = zip(*color_counts)
 
-            colors, counts = np.unique(unique_colors, return_counts=True)
-            sorted_indices = np.argsort(counts)[::-1]
-            sorted_colors = colors[sorted_indices].tolist()
-            top10_colors = sorted_colors[:10]
+        clusters = []
 
-            top10_changed = False
-            for i, top_color in enumerate(top10_colors):
-                for j in range(i + 1, len(sorted_colors)):
-                    rgb_color = self.hex_to_rgb(sorted_colors[j])
-                    rgb_top_color = self.hex_to_rgb(top_color)
+        print(f"no of unique colors: {len(rgb_sorted_color)}")
+        # print(f"loop start time: {time()}")
+        for i in range(len(rgb_sorted_color)):
+            # debug using time
+            # if not i % 10000:
+            #     print(f"time: {time()}")
+            color = rgb_sorted_color[i]
+            count = rgb_count[i]
+            if not clusters:
+                clusters.append({"center": color, "count": count})
+            else:
+                # if not i % 10000:
+                #     print(f"time 1: {time()}")
+                nearest = min(
+                    clusters, key=lambda c: distance.euclidean(c["center"], color)
+                )
+                # if not i % 10000:
+                #     print(f"time 2: {time()}")
+                if distance.euclidean(nearest["center"], color) < self.delta:
+                    nearest["count"] += count
+                    # for now commenting out taking the weighted average value
+                    # total = nearest["count"]
+                    # nearest["center"] = tuple(
+                    #     (
+                    #         np.array(nearest["center"]) * (total - count)
+                    #         + np.array(color) * count
+                    #     )
+                    #     / total
+                    # )
+                else:
+                    clusters.append({"center": color, "count": count})
 
-                    dis = distance.euclidean(rgb_color, rgb_top_color)
+        sorted_clusters = sorted(clusters, key=lambda c: c["count"], reverse=True)
+        print(f"sorted cluster length: {len(sorted_clusters)}")
+        top_clusters = sorted_clusters[:10]
+        top_colors = [
+            self.rgb_to_hex(tuple(map(int, cluster["center"])))
+            for cluster in top_clusters
+        ]
 
-                    if dis < self.delta and sorted_colors[j] != top_color:
-                        # print(dis)
-                        sorted_colors[j] = top_color
-                        top10_changed = True
+        print(f"top_clusters: {top_colors}")
 
-                if top10_changed:
-                    print(
-                        f"changed top10_color: {top_color} count; jumping out to resort again"
-                    )
-                    unique_colors = sorted_colors
-                    break
+        # print(f"color_counts: {color_counts}")
+        # print(f"rgb_sorted: {rgb_sorted_color[:10]}")
+        # print(f"rbg_counts: {rgb_count[:10]}")
 
-        return top10_colors
+        return top_colors
 
     def hex_to_rgb(self, hex_color):
         hex_color = hex_color.lstrip("#")
