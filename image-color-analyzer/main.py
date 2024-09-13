@@ -1,4 +1,3 @@
-from color_processor import ColorProcessor
 from ui import UI
 
 
