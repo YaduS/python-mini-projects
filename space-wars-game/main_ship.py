@@ -18,7 +18,6 @@ class MainShip(Turtle):
     def set_shape(self, screen: _Screen):
         self.penup()
         self.setposition(STARTING_POSITION)
-        screen.register_shape("./space-wars-game/spaceship.gif")
         self.shape("./space-wars-game/spaceship.gif")
         self.resizemode("user")
         self.shapesize(stretch_wid=0.5, stretch_len=0.5, outline=0)
@@ -58,7 +57,7 @@ class MainShip(Turtle):
         rocket = Turtle(shape="square")
         rocket.penup()
         rocket.setposition((self.xcor(), self.ycor() + 20))
-        rocket.color("white")
+        rocket.color("green")
         rocket.resizemode("user")
         rocket.shapesize(stretch_wid=0.5, stretch_len=0.1, outline=0)
         self.projectiles.append(rocket)
