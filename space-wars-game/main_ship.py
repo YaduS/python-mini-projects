@@ -64,13 +64,23 @@ class MainShip(Turtle):
         self.projectiles.append(rocket)
 
     def move_existing_projectiles(self):
-        for projectile in self.projectiles:
+        projectiles_to_remove = []
+        for i, projectile in enumerate(self.projectiles):
             ycor = (
                 projectile.ycor() + PROJECTILE_SPEED
                 if projectile.ycor() < MAX_Y
                 else projectile.ycor()
             )
-            projectile.goto(x=projectile.xcor(), y=ycor)
+            if ycor >= MAX_Y:
+                projectiles_to_remove.append(i)
+            else:
+                projectile.goto(x=projectile.xcor(), y=ycor)
+
+        for index in projectiles_to_remove[::-1]:
+            print("index: ", index)
+            self.projectiles[index].clear()
+            self.projectiles[index].hideturtle()
+            del self.projectiles[index]
 
     def fire(self):
         self.create_projectile()
