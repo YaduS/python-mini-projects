@@ -1,18 +1,14 @@
 from time import sleep
 from turtle import Screen
-
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
-MAX_Y = +WINDOW_HEIGHT / 2
-MIN_Y = -WINDOW_HEIGHT / 2
-
-RENDER_DELAY = 1
+from main_ship import MainShip
+from game_constants import WINDOW_HEIGHT, WINDOW_WIDTH, RENDER_DELAY
 
 
 class GameManager:
     def __init__(self):
         self.screen = Screen()
         self.config_main_screen()
+        self.main_ship = MainShip(screen=self.screen)
 
     def config_main_screen(self):
         screen = self.screen
@@ -25,5 +21,4 @@ class GameManager:
         game_active = True
         while game_active:
             self.screen.update()
-
             sleep(RENDER_DELAY)
