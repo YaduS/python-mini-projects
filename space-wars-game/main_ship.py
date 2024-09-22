@@ -1,8 +1,10 @@
 from turtle import _Screen, Turtle
-from game_constants import MIN_X, MAX_X
+from game_constants import MAX_Y, MIN_X, MAX_X
+from typing import List
 
 STARTING_POSITION = (0, -240)
-MOVE_SPEED = 30
+MOVE_SPEED = 15
+PROJECTILE_SPEED = 5
 
 
 class MainShip(Turtle):
@@ -11,6 +13,7 @@ class MainShip(Turtle):
         super().__init__()
         self.set_shape(screen)
         self.configure_listeners(screen)
+        self.projectiles: List[Turtle] = []
 
     def set_shape(self, screen: _Screen):
         self.penup()
@@ -51,5 +54,26 @@ class MainShip(Turtle):
         if xcor < MAX_X - 10:
             self.goto(x=xcor + MOVE_SPEED, y=self.ycor())
 
+    def create_projectile(self):
+        rocket = Turtle(shape="square")
+        rocket.penup()
+        rocket.setposition((self.xcor(), self.ycor() + 20))
+        rocket.color("white")
+        rocket.resizemode("user")
+        rocket.shapesize(stretch_wid=0.5, stretch_len=0.1, outline=0)
+        self.projectiles.append(rocket)
+
+    def move_existing_projectiles(self):
+        for projectile in self.projectiles:
+            ycor = (
+                projectile.ycor() + PROJECTILE_SPEED
+                if projectile.ycor() < MAX_Y
+                else projectile.ycor()
+            )
+            projectile.goto(x=projectile.xcor(), y=ycor)
+
     def fire(self):
-        print("fire")
+        self.create_projectile()
+
+    def cycle_update(self):
+        self.move_existing_projectiles()

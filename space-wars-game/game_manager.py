@@ -21,4 +21,5 @@ class GameManager:
         game_active = True
         while game_active:
             self.screen.update()
+            self.main_ship.cycle_update()
             sleep(RENDER_DELAY)
