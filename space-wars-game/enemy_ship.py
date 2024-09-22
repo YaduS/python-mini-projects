@@ -10,16 +10,16 @@ STARTING_POSITION = (0, 240)
 
 class EnemyShip(Turtle):
 
-    def __init__(self):
+    def __init__(self, starting_position):
         super().__init__()
         self.projectiles: List[Turtle] = []
         self.move_direction = "left"
         self.move_counter = 1
-        self.set_shape()
+        self.set_shape(starting_position)
 
-    def set_shape(self):
+    def set_shape(self, starting_position):
         self.penup()
-        self.setposition(STARTING_POSITION)
+        self.setposition(starting_position)
         self.shape("./space-wars-game/spaceship.gif")
         self.resizemode("user")
         self.shapesize(stretch_wid=0.25, stretch_len=0.25, outline=0)
