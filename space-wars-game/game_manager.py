@@ -27,7 +27,9 @@ class GameManager:
         self.generate_enemy_ships()
 
     def generate_enemy_ships(self):
-        # note: tweak hardcoded values in this file to change placement of enemy ships. Its better to get these constants either from constants file or better yet as static properties of something from the enemy_ship file?
+        # note: tweak hardcoded values in this file to change placement of enemy
+        # ships. Its better to get these constants either from constants file or
+        # better yet as static properties of something from the enemy_ship file?
         self.enemy_ships: List[EnemyShip] = []
         for i in range(NO_OF_ENEMY_ROWS):
             for j in range(NO_OF_ENEMIES_PER_ROW):
@@ -53,4 +55,32 @@ class GameManager:
         while game_active:
             self.screen.update()
             self.cycle_update()
+            self.check_collisions()
             sleep(RENDER_DELAY)
+
+    def check_collisions(self):
+        # check collision of main ship projectiles with enemy ships
+        for j, laser in enumerate(self.main_ship.projectiles[:]):
+            if laser.ycor() < 0:
+                continue
+            for i, enemy_ship in enumerate(self.enemy_ships):
+                if enemy_ship.distance(laser) < 50:
+                    # remove enemy_ship
+                    enemy_ship.clear()
+                    enemy_ship.hideturtle()
+                    del self.enemy_ships[i]
+
+                    # remove laser so that it doesn't hit enemy ships behind it
+                    laser.clear()
+                    laser.hideturtle()
+                    del self.main_ship.projectiles[j]
+                    break
+
+        # check collision of enemy projectiles with main ship
+        for enemy_ship in self.enemy_ships:
+            for i, laser in enumerate(enemy_ship.projectiles):
+                if self.main_ship.distance(laser) < 50:
+                    print("ship hit - reduce ship health")
+                    laser.clear()
+                    laser.hideturtle()
+                    del enemy_ship.projectiles[i]
